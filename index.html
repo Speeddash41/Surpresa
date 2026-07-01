@@ -10,10 +10,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
 }
 
-/* vidro (glassmorphism) */
 .container {
   backdrop-filter: blur(15px);
   background: rgba(255,255,255,0.1);
@@ -23,11 +21,7 @@ body {
   color: white;
   width: 90%;
   max-width: 400px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.3);
 }
-
-h1 { font-size: 2.2em; }
-p { font-size: 1.1em; }
 
 .buttons {
   display: flex;
@@ -42,62 +36,41 @@ button {
   border: none;
   border-radius: 20px;
   cursor: pointer;
-  transition: 0.3s;
 }
 
-.yes {
-  background: #ff4d6d;
-  color: white;
-}
+.yes { background: #ff4d6d; color: white; }
+.no { background: white; color: #ff4d6d; }
 
-.no {
-  background: white;
-  color: #ff4d6d;
-}
-
-button:hover {
-  transform: scale(1.1);
-}
-
-/* inputs */
 textarea {
   width: 90%;
   border-radius: 10px;
   border: none;
   padding: 10px;
   margin-top: 10px;
-  resize: none;
 }
 
-/* corações */
-.heart {
-  position: absolute;
-  color: pink;
-  animation: float 5s linear infinite;
+.card {
+  background: rgba(0,0,0,0.3);
+  padding: 15px;
+  border-radius: 15px;
+  margin-top: 10px;
 }
-
-@keyframes float {
-  0% {transform: translateY(100vh);}
-  100% {transform: translateY(-10vh);}
-}
-</style></head><body><!-- Música --><audio autoplay loop>
-  <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3">
-</audio><div class="container">
+</style></head><body><div class="container">
   <h1 id="title">Oi Ananda 💖</h1>
-  <p id="text">Eu fiz algo especial pra você...</p>  <div id="buttons" class="buttons">
+  <p id="text">Confia e responde 👀</p>  <div id="buttons" class="buttons">
     <button class="yes" onclick="next()">Começar</button>
-  </div>  <!-- segredo -->  <div id="secret" style="display:none;">
-    <p>Agora me fala 😳</p><p><b>Minhas qualidades?</b></p>
-<textarea id="q"></textarea>
-
-<p><b>Meus defeitos?</b></p>
+  </div>  <div id="secret" style="display:none;">
+    <p>Minhas qualidades?</p>
+    <textarea id="q"></textarea><p>Meus defeitos?</p>
 <textarea id="d"></textarea>
 
-<button class="yes" onclick="finalizar()">Continuar 💖</button>
+<button class="yes" onclick="mostrarResumo()">Continuar 💖</button>
 
   </div>
 </div><script>
 let step = 0;
+let qualidades = "";
+let defeitos = "";
 
 function next() {
   step++;
@@ -107,7 +80,7 @@ function next() {
   let buttons = document.getElementById("buttons");
 
   if (step === 1) {
-    title.innerText = "Pergunta 1 😏";
+    title.innerText = "Pergunta 😏";
     text.innerText = "Você gosta de mim?";
     buttons.innerHTML = `
       <button class="yes" onclick="next()">Sim 💖</button>
@@ -116,35 +89,45 @@ function next() {
   }
 
   else if (step === 2) {
-    title.innerText = "Pergunta 2 😳";
-    text.innerText = "Eu te faço sorrir?";
-    buttons.innerHTML = `
-      <button class="yes" onclick="next()">Sim 😊</button>
-      <button class="no" onclick="next()">Sempre 😍</button>
-    `;
-  }
-
-  else if (step === 3) {
     title.innerText = "Área secreta 🔐";
-    text.innerText = "Só você pode ver isso...";
+    text.style.display = "none";
     buttons.style.display = "none";
     document.getElementById("secret").style.display = "block";
   }
 }
 
-function finalizar() {
-  let q = document.getElementById("q").value;
-  let d = document.getElementById("d").value;
+function mostrarResumo() {
+  qualidades = document.getElementById("q").value;
+  defeitos = document.getElementById("d").value;
 
-  if (!q || !d) {
+  if (!qualidades || !defeitos) {
     alert("Preenche tudo 😅");
     return;
   }
 
   document.querySelector(".container").innerHTML = `
-    <h1>Então... 💍</h1>
-    <p>Mesmo com meus defeitos 😅</p>
-    <p>e com tudo que você disse 💖</p>
+    <h1>Olha o que você disse 😳</h1>
+
+    <div class="card">
+      <h3>💖 Qualidades</h3>
+      <p>${qualidades}</p>
+    </div>
+
+    <div class="card">
+      <h3>😅 Defeitos</h3>
+      <p>${defeitos}</p>
+    </div>
+
+    <button class="yes" onclick="pedido()">Continuar...</button>
+  `;
+}
+
+function pedido() {
+  document.querySelector(".container").innerHTML = `
+    <h1>Depois disso tudo... 💍</h1>
+    <p>Mesmo sabendo meus defeitos 😅</p>
+    <p>e vendo minhas qualidades 💖</p>
+
     <h2>Quer namorar comigo?</h2>
 
     <div class="buttons">
@@ -161,25 +144,12 @@ function aceitou() {
       <p>Agora você é oficialmente minha 💕</p>
     </div>
   `;
-
-  setInterval(criarCoracao, 200);
 }
 
 function fugir(btn) {
   btn.style.position = "absolute";
   btn.style.top = Math.random() * window.innerHeight + "px";
   btn.style.left = Math.random() * window.innerWidth + "px";
-}
-
-function criarCoracao() {
-  let heart = document.createElement("div");
-  heart.classList.add("heart");
-  heart.innerText = "💖";
-  heart.style.left = Math.random() * 100 + "vw";
-  heart.style.fontSize = (Math.random() * 20 + 10) + "px";
-  document.body.appendChild(heart);
-
-  setTimeout(() => heart.remove(), 5000);
 }
 </script></body>
 </html>
