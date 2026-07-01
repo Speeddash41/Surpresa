@@ -1,0 +1,114 @@
+<!DOCTYPE html><html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Pra você, Ananda 💖</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }.container {
+  text-align: center;
+  color: white;
+  animation: fadeIn 2s ease;
+}
+
+h1 {
+  font-size: 3em;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 1.3em;
+  margin-bottom: 30px;
+}
+
+button {
+  padding: 15px 25px;
+  font-size: 1.2em;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin: 10px;
+}
+
+.yes {
+  background-color: #ff4d6d;
+  color: white;
+}
+
+.yes:hover {
+  background-color: #ff1e4d;
+  transform: scale(1.1);
+}
+
+.no {
+  background-color: white;
+  color: #ff4d6d;
+  position: absolute;
+}
+
+.heart {
+  position: absolute;
+  color: white;
+  font-size: 20px;
+  animation: float 5s linear infinite;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(20px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes float {
+  0% {transform: translateY(100vh);}
+  100% {transform: translateY(-10vh);}
+}
+
+#message {
+  margin-top: 20px;
+  font-size: 1.5em;
+  display: none;
+}
+
+  </style>
+</head>
+<body><div class="container">
+  <h1>Ananda 💖</h1>
+  <p>Desde que você entrou na minha vida, tudo ficou mais leve, mais bonito e mais feliz...</p>
+  <p>Eu não quero só momentos... eu quero você comigo.</p>  <h2>Quer namorar comigo? 💍</h2><button class="yes" onclick="aceitou()">Sim 💖</button>
+<button class="no" onmouseover="fugir(this)">Não 😅</button>
+
+  <div id="message">EU SABIA 😍💖</div>
+</div><script>
+  function aceitou() {
+    document.getElementById("message").style.display = "block";
+  }
+
+  function fugir(btn) {
+    btn.style.top = Math.random() * window.innerHeight + "px";
+    btn.style.left = Math.random() * window.innerWidth + "px";
+  }
+
+  function criarCoracoes() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerText = "💖";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = Math.random() * 20 + 10 + "px";
+    document.body.appendChild(heart);
+
+    setTimeout(() => {
+      heart.remove();
+    }, 5000);
+  }
+
+  setInterval(criarCoracoes, 300);
+</script></body>
+</html>
