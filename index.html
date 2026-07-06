@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💖 Pra Você 💖</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Comic Sans MS', cursive;
+  background: linear-gradient(135deg, #ffc0cb, #e6a4f7);
+  color: white;
+  text-align: center;
+  overflow: hidden;
+}
+
+.container {
+  padding: 20px;
+  margin-top: 20%;
+}
+
+button {
+  padding: 12px 20px;
+  margin: 10px;
+  border: none;
+  border-radius: 20px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.sim {
+  background-color: #ff4d88;
+  color: white;
+}
+
+.nao {
+  background-color: #555;
+  color: white;
+  position: absolute;
+}
+
+textarea {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  width: 80%;
+  margin: 10px;
+}
+
+.hearts {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.heart {
+  position: absolute;
+  animation: float 5s linear infinite;
+}
+
+@keyframes float {
+  from { transform: translateY(100vh); }
+  to { transform: translateY(-10vh); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="hearts" id="hearts"></div>
+
+<!-- 🔥 ESSA DIV É O QUE FALTAVA / QUEBRAVA -->
+<div class="container" id="app"></div>
+
+<script>
+let step = 0;
+let respostas = {};
+
+// 🔥 COLE SEU WEBHOOK AQUI
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1506824208934637578/7CXLsyEKn2yzLBq5cMZJhEKrlg4mSQ2k_izdxxLkLsmwWbrOXZUkz501r7FDVy8zPvW-";
+
+function render() {
+  const app = document.getElementById("app");
+  if (!app) return; // 🔒 evita erro
+
+  if (step === 0) {
+    app.innerHTML = `
+      <h2>Oi… eu fiz isso aqui pra você 💖</h2>
+      <button onclick="next()">Clica aqui 👀</button>
+    `;
+  }
+
+  if (step === 1) {
+    app.innerHTML = `
+      <h2>Você gosta de mim? 😳</h2>
+      <button class="sim" onclick="responder('gosta','sim')">Sim 💖</button>
+      <button class="sim" onclick="responder('gosta','muito')">Muito 😍</button>
+    `;
+  }
+
+  if (step === 2) {
+    app.innerHTML = `
+      <h2>Eu sou especial pra você? 🥺</h2>
+      <button class="sim" onclick="responder('especial','sim')">Sim 💖</button>
+      <button class="sim" onclick="responder('especial','demais')">Demais 😍</button>
+    `;
+  }
+
+  if (step === 3) {
+    app.innerHTML = `
+      <h2>Me dá uma chance de te fazer feliz? 💫</h2>
+      <button class="sim" onclick="responder('chance','sim')">Sim 💖</button>
+      <button class="sim" onclick="responder('chance','claro')">Claro 😍</button>
+    `;
+  }
+
+  if (step === 4) {
+    app.innerHTML = `
+      <h2>Agora me fala umas qualidades minhas 👀</h2>
+      <textarea id="qualidades" placeholder="Escreve aqui..."></textarea>
+      <h2>E uns defeitos 😅</h2>
+      <textarea id="defeitos" placeholder="Escreve aqui..."></textarea>
+      <br>
+      <button onclick="salvarTexto()">Continuar 💖</button>
+    `;
+  }
+
+  if (step === 5) {
+    app.innerHTML = `
+      <h2>Mesmo com tudo isso… 💭</h2>
+      <p>${respostas.qualidades || ""}</p>
+      <p>${respostas.defeitos || ""}</p>
+      <h2>Você chegou até aqui… 💖</h2>
+      <button onclick="next()">Continuar 👀</button>
+    `;
+  }
+
+  if (step === 6) {
+    app.innerHTML = `
+      <h1>Então… 💍</h1>
+      <h2>Você aceita namorar comigo? 💖</h2>
+      <button class="sim" onclick="aceitou()">SIM 💖</button>
+      <button class="nao" id="nao">NÃO 😈</button>
+    `;
+
+    const nao = document.getElementById("nao");
+    if (nao) {
+      nao.onmouseover = () => {
+        nao.style.top = Math.random() * window.innerHeight + "px";
+        nao.style.left = Math.random() * window.innerWidth + "px";
+      };
+    }
+  }
+
+  if (step === 7) {
+    app.innerHTML = `
+      <h1>💖 AEEEEEEEEEE 💖</h1>
+      <h2>Agora você é oficialmente minha 😍</h2>
+      <p>Eu prometo te fazer muito feliz 💫</p>
+    `;
+  }
+}
+
+function next() {
+  step++;
+  render();
+}
+
+function responder(pergunta, resposta) {
+  respostas[pergunta] = resposta;
+  next();
+}
+
+function salvarTexto() {
+  respostas.qualidades = document.getElementById("qualidades").value;
+  respostas.defeitos = document.getElementById("defeitos").value;
+  next();
+}
+
+function aceitou() {
+  enviarDiscord();
+  next();
+  soltarCoracoes();
+}
+
+// 🔥 ENVIO PRO DISCORD
+function enviarDiscord() {
+  if (!WEBHOOK_URL || WEBHOOK_URL.includes("COLE")) {
+    console.warn("Webhook não configurado");
+    return;
+  }
+
+  const mensagem = {
+    content: "💖 NOVA RESPOSTA 💖",
+    embeds: [{
+      title: "Resultado do site",
+      color: 16738740,
+      fields: [
+        { name: "Gosta", value: respostas.gosta || "N/A" },
+        { name: "Especial", value: respostas.especial || "N/A" },
+        { name: "Chance", value: respostas.chance || "N/A" },
+        { name: "Qualidades", value: respostas.qualidades || "N/A" },
+        { name: "Defeitos", value: respostas.defeitos || "N/A" }
+      ]
+    }]
+  };
+
+  fetch(WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(mensagem)
+  })
+  .then(() => console.log("Enviado pro Discord"))
+  .catch(err => console.error(err));
+}
+
+// 💖 ANIMAÇÃO
+function soltarCoracoes() {
+  setInterval(() => {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerText = "💖";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (Math.random() * 20 + 20) + "px";
+    document.getElementById("hearts").appendChild(heart);
+
+    setTimeout(() => heart.remove(), 5000);
+  }, 200);
+}
+
+// 🔥 GARANTE QUE NÃO DÁ ERRO
+window.onload = () => {
+  render();
+};
+</script>
+
+</body>
+</html>
