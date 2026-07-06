@@ -8,16 +8,15 @@
 <style>
 body {
   margin: 0;
-  font-family: 'Comic Sans MS', cursive;
+  font-family: Arial, sans-serif;
   background: linear-gradient(135deg, #ffc0cb, #e6a4f7);
   color: white;
   text-align: center;
-  overflow: hidden;
 }
 
 .container {
   padding: 20px;
-  margin-top: 20%;
+  margin-top: 25vh;
 }
 
 button {
@@ -37,30 +36,23 @@ button {
 .nao {
   background-color: #555;
   color: white;
-  position: absolute;
+  position: fixed;
 }
 
 textarea {
+  width: 80%;
   padding: 10px;
   border-radius: 10px;
   border: none;
-  width: 80%;
   margin: 10px;
 }
 
-.hearts {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
 .heart {
-  position: absolute;
-  animation: float 5s linear infinite;
+  position: fixed;
+  animation: subir 5s linear infinite;
 }
 
-@keyframes float {
+@keyframes subir {
   from { transform: translateY(100vh); }
   to { transform: translateY(-10vh); }
 }
@@ -69,21 +61,22 @@ textarea {
 
 <body>
 
-<div class="hearts" id="hearts"></div>
-
-<!-- 🔥 ESSA DIV É O QUE FALTAVA / QUEBRAVA -->
-<div class="container" id="app"></div>
+<div id="app" class="container">
+  <h2>Carregando... 💖</h2>
+</div>
 
 <script>
+document.addEventListener("DOMContentLoaded", function () {
+
 let step = 0;
 let respostas = {};
 
-// 🔥 COLE SEU WEBHOOK AQUI
+// 🔥 COLE SEU WEBHOOK OU DEIXA VAZIO
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1506824208934637578/7CXLsyEKn2yzLBq5cMZJhEKrlg4mSQ2k_izdxxLkLsmwWbrOXZUkz501r7FDVy8zPvW-";
 
 function render() {
   const app = document.getElementById("app");
-  if (!app) return; // 🔒 evita erro
+  if (!app) return;
 
   if (step === 0) {
     app.innerHTML = `
@@ -118,10 +111,10 @@ function render() {
 
   if (step === 4) {
     app.innerHTML = `
-      <h2>Agora me fala umas qualidades minhas 👀</h2>
-      <textarea id="qualidades" placeholder="Escreve aqui..."></textarea>
-      <h2>E uns defeitos 😅</h2>
-      <textarea id="defeitos" placeholder="Escreve aqui..."></textarea>
+      <h2>Me fala qualidades minhas 👀</h2>
+      <textarea id="qualidades"></textarea>
+      <h2>Agora defeitos 😅</h2>
+      <textarea id="defeitos"></textarea>
       <br>
       <button onclick="salvarTexto()">Continuar 💖</button>
     `;
@@ -132,8 +125,7 @@ function render() {
       <h2>Mesmo com tudo isso… 💭</h2>
       <p>${respostas.qualidades || ""}</p>
       <p>${respostas.defeitos || ""}</p>
-      <h2>Você chegou até aqui… 💖</h2>
-      <button onclick="next()">Continuar 👀</button>
+      <button onclick="next()">Continuar 💖</button>
     `;
   }
 
@@ -156,84 +148,71 @@ function render() {
 
   if (step === 7) {
     app.innerHTML = `
-      <h1>💖 AEEEEEEEEEE 💖</h1>
+      <h1>💖 AAAAA 💖</h1>
       <h2>Agora você é oficialmente minha 😍</h2>
-      <p>Eu prometo te fazer muito feliz 💫</p>
     `;
   }
 }
 
-function next() {
+window.next = function () {
   step++;
   render();
-}
+};
 
-function responder(pergunta, resposta) {
-  respostas[pergunta] = resposta;
+window.responder = function (p, r) {
+  respostas[p] = r;
   next();
-}
+};
 
-function salvarTexto() {
+window.salvarTexto = function () {
   respostas.qualidades = document.getElementById("qualidades").value;
   respostas.defeitos = document.getElementById("defeitos").value;
   next();
-}
+};
 
-function aceitou() {
+window.aceitou = function () {
   enviarDiscord();
   next();
-  soltarCoracoes();
-}
+  coracoes();
+};
 
-// 🔥 ENVIO PRO DISCORD
 function enviarDiscord() {
-  if (!WEBHOOK_URL || WEBHOOK_URL.includes("COLE")) {
-    console.warn("Webhook não configurado");
-    return;
-  }
-
-  const mensagem = {
-    content: "💖 NOVA RESPOSTA 💖",
-    embeds: [{
-      title: "Resultado do site",
-      color: 16738740,
-      fields: [
-        { name: "Gosta", value: respostas.gosta || "N/A" },
-        { name: "Especial", value: respostas.especial || "N/A" },
-        { name: "Chance", value: respostas.chance || "N/A" },
-        { name: "Qualidades", value: respostas.qualidades || "N/A" },
-        { name: "Defeitos", value: respostas.defeitos || "N/A" }
-      ]
-    }]
-  };
+  if (!WEBHOOK_URL) return;
 
   fetch(WEBHOOK_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(mensagem)
-  })
-  .then(() => console.log("Enviado pro Discord"))
-  .catch(err => console.error(err));
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      content: "💖 NOVA RESPOSTA 💖",
+      embeds: [{
+        title: "Resultado",
+        fields: [
+          {name: "Gosta", value: respostas.gosta || "N/A"},
+          {name: "Especial", value: respostas.especial || "N/A"},
+          {name: "Chance", value: respostas.chance || "N/A"},
+          {name: "Qualidades", value: respostas.qualidades || "N/A"},
+          {name: "Defeitos", value: respostas.defeitos || "N/A"}
+        ]
+      }]
+    })
+  });
 }
 
-// 💖 ANIMAÇÃO
-function soltarCoracoes() {
+function coracoes() {
   setInterval(() => {
-    const heart = document.createElement("div");
-    heart.className = "heart";
-    heart.innerText = "💖";
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = (Math.random() * 20 + 20) + "px";
-    document.getElementById("hearts").appendChild(heart);
-
-    setTimeout(() => heart.remove(), 5000);
+    let h = document.createElement("div");
+    h.className = "heart";
+    h.innerText = "💖";
+    h.style.left = Math.random()*100 + "vw";
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 5000);
   }, 200);
 }
 
-// 🔥 GARANTE QUE NÃO DÁ ERRO
-window.onload = () => {
-  render();
-};
+// 🔥 INÍCIO GARANTIDO
+render();
+
+});
 </script>
 
 </body>
